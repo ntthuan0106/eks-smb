@@ -1,3 +1,4 @@
+#pwsh-smb.yml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1

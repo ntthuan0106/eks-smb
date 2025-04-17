@@ -1,9 +1,9 @@
+#smb-server-networkdisk.yml
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: smb-server
-  namespace: default
   labels:
     app: smb-server
 spec:
@@ -18,20 +18,18 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: pvc-networkdisk-smbshare
-  namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
-  storageClassName: gp2  # storage provider is Azure disk in Azure and persistent disk in GCE.
+      storage: 10Gi
+  storageClassName: thuan-test-sc
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: smb-server
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -51,17 +49,17 @@ spec:
           env:
             - name: PERMISSIONS
               value: "0777"
-            - name: USERNAME
+            - name: USER
               valueFrom:
                 secretKeyRef:
                   name: smbcreds
                   key: username
-            - name: PASSWORD
+            - name: PASS
               valueFrom:
                 secretKeyRef:
                   name: smbcreds
                   key: password
-          args: ["-u", "$(USERNAME);$(PASSWORD)", "-s", "share;/smbshare/;yes;no;no;all;none", "-p"]
+          args: ["-u", "$(USER);$(PASS)", "-s", "share;/smbshare/;yes;no;no;all;none", "-p"]
           volumeMounts:
             - mountPath: /smbshare
               name: data-volume
