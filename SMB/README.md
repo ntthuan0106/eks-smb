@@ -8,10 +8,35 @@ helm uninstall csi-driver-smb -n kube-system
 # ADD secret
 kubectl create secret generic smbcreds --from-literal username=USERNAME --from-literal password="PASSWORD"
 #Create a Samba Server deployment on the network disk
-kubectl create -f https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/deploy/example/smb-provisioner/smb-server-networkdisk.yaml
+kubectl apply -f smb-server-networkdisk.yml
 
-kubectl apply -f smb-storag-class.yml
+kubectl apply -f smb-storage-class.yml
+kubectl apply -f ebs-storage-class.yml
 kubectl apply -f test.yml
 
 aws eks describe-cluster --name thuan-eks --query "cluster.identity.oidc.issuer" --output text
 ```
+
+```bash
+oidc_id=$(aws eks describe-cluster --name thuan-eks --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+echo $oidc_id
+
+eksctl utils associate-iam-oidc-provider --cluster thuan-eks --approve
+
+eksctl create iamserviceaccount \
+        --name ebs-csi-controller-sa \
+        --namespace kube-system \
+        --cluster thuan-eks \
+        --role-name AmazonEKS_EBS_CSI_DriverRole \
+        --role-only \
+        --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+        --approve
+
+kubectl annotate serviceaccount \
+  -n kube-system ebs-csi-controller-sa \
+  eks.amazonaws.com/role-arn=arn:aws:iam::492804330065:role/thuan_devops_role \
+  --overwrite
+
+
+aws eks describe-addon --cluster-name thuan-eks --addon-name aws-ebs-csi-driver
+
