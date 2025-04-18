@@ -12,8 +12,8 @@ module "vpc_eks" {
   arn_node_role = var.arn_cluster_role
 
   node_group_name  = var.node_group_name
-  desired_size = 2
-  min_size = 2
+  desired_size = 1
+  min_size = 0
   max_size = 5
   
   # eks_addon_list = [
@@ -28,7 +28,6 @@ module "vpc_eks" {
     { name = "kube-proxy", version = "v1.32.0-eksbuild.2"  },
     { name = "metrics-server", version = "v0.7.2-eksbuild.2" },
     { name = "aws-ebs-csi-driver",},
-    { name = "aws-efs-csi-driver",},
     { name = "aws-mountpoint-s3-csi-driver",},
     { name = "snapshot-controller",},
   ]
@@ -65,3 +64,26 @@ data "aws_acm_certificate" "name" {
 #         },
 #     ]
 # }
+
+resource "aws_ebs_volume" "ebs_volume" {
+  availability_zone = "us-east-1a"  # Specify your availability zone
+  size              = 20
+  type = "gp2"
+  tags = {
+    Name = "${var.cluster_name}-ebs"
+    key = "kubernetes.io/cluster/${var.cluster_name}"
+    Value= "owned"
+  }
+}
+
+module "eks-ebs-csi" {
+  source  = "mrnim94/eks-ebs-csi/aws"
+  version = "2.1.1"
+
+  aws_region = "us-east-1"
+
+ eks_cluster_certificate_authority_data = module.vpc_eks.cluster_ca_certificate
+ eks_cluster_endpoint = module.vpc_eks.eks_endpoint
+ eks_cluster_name = module.vpc_eks.cluster_name
+ aws_iam_openid_connect_provider_arn = "arn:aws:iam::492804330065:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/1E025760070620269658C02245209BEC"
+}

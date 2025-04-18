@@ -6,6 +6,9 @@ resource "aws_eks_cluster" "cluster" {
       aws_subnet.subnet_pub[*].id,
       )
   }
+  # access_config {
+  #   authentication_mode = "API_AND_CONFIG_MAP"
+  # }
   version = var.k8s_version
   bootstrap_self_managed_addons = true
   tags = {
