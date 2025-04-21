@@ -12,7 +12,7 @@ kubectl apply -f smb-server-networkdisk.yml
 
 kubectl apply -f smb-storage-class.yml
 kubectl apply -f ebs-storage-class.yml
-kubectl apply -f test.yml
+kubectl apply -f pwsh-smb.yml
 
 aws eks describe-cluster --name thuan-eks --query "cluster.identity.oidc.issuer" --output text
 ```
@@ -34,9 +34,13 @@ eksctl create iamserviceaccount \
 
 kubectl annotate serviceaccount \
   -n kube-system ebs-csi-controller-sa \
-  eks.amazonaws.com/role-arn=arn:aws:iam::492804330065:role/thuan_devops_role \
+  eks.amazonaws.com/role-arn=arn:aws:iam::492804330065:role/SAP-dev-ebs-csi-iam-role \
   --overwrite
 
 
 aws eks describe-addon --cluster-name thuan-eks --addon-name aws-ebs-csi-driver
 
+kubectl get pod smb-server-9f999cd64-57zzf  -o jsonpath="{.spec.containers[*].image}"
+kubectl exec -it alpine-3-20-deployment-6b65d4ff85-thhbg -- /bin/sh
+kubectl exec -it alpine-3-21-deployment-6f75958446-nlkj7 -- /bin/sh
+kubectl exec -it smb-server-9f999cd64-57zzf -- /bin/sh

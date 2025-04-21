@@ -12,7 +12,7 @@ parameters:
   # with PV name under source
   csi.storage.k8s.io/provisioner-secret-name: "smbcreds"
   csi.storage.k8s.io/provisioner-secret-namespace: default # you need to change it
-  csi.storage.k8s.io/node-stage-secret-name: "default"
+  csi.storage.k8s.io/node-stage-secret-name: "smbcreds"
   csi.storage.k8s.io/node-stage-secret-namespace: default # you need to change it
 volumeBindingMode: Immediate
 mountOptions:
