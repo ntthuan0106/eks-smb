@@ -44,3 +44,4 @@ kubectl get pod smb-server-9f999cd64-57zzf  -o jsonpath="{.spec.containers[*].im
 kubectl exec -it alpine-3-20-deployment-6b65d4ff85-thhbg -- /bin/sh
 kubectl exec -it alpine-3-21-deployment-6f75958446-nlkj7 -- /bin/sh
 kubectl exec -it smb-server-9f999cd64-57zzf -- /bin/sh
+492804330065.dkr.ecr.us-east-1.amazonaws.com/thuan-ecr/smb:v3.21.3

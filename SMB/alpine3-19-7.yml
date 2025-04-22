@@ -2,21 +2,21 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: smb-server-3-21-3
+  name: smb-server-3-19-7
   labels:
-    app: smb-server-3-21-3
+    app: smb-server-3-19-7
 spec:
   type: ClusterIP  # use "LoadBalancer" to get a public ip
   selector:
-    app: smb-server-3-21-3
+    app: smb-server-3-19-7
   ports:
     - port: 445
-      name: smb-server-3-21-3
+      name: smb-server-3-19-7
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pvc-networkdisk-smbshare-3-21-3
+  name: pvc-networkdisk-smbshare-3-19-7
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,23 +28,23 @@ spec:
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: smb-server-3-21-3
+  name: smb-server-3-19-7
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: smb-server-3-21-3
+      app: smb-server-3-19-7
   template:
     metadata:
-      name: smb-server-3-21-3
+      name: smb-server-3-19-7
       labels:
-        app: smb-server-3-21-3
+        app: smb-server-3-19-7
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-        - name: smb-server-3-21-3
-          image: 492804330065.dkr.ecr.us-east-1.amazonaws.com/thuan-ecr/smb:3.21.3
+        - name: smb-server-3-19-7
+          image: 492804330065.dkr.ecr.us-east-1.amazonaws.com/thuan-ecr/smb:3.19.7
           env:
             - name: PERMISSIONS
               value: "0777"
@@ -67,4 +67,4 @@ spec:
       volumes:
         - name: data-volume
           persistentVolumeClaim:
-            claimName: pvc-networkdisk-smbshare-3-21-3
+            claimName: pvc-networkdisk-smbshare-3-19-7
